@@ -1,7 +1,18 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     }
-  }
+  },
+  "include": [
+    "**/*.js",
+    "**/*.jsx",
+    "app/api/ai-feedback"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
