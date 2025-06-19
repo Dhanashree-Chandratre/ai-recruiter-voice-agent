@@ -14,7 +14,7 @@ function CreateInterview() {
   const [formData, setFormData] = useState({});
   const [interviewId, setInterviewId] = useState();
   const onHandleInputChange = (newFormData) => {
-    console.log("Form data updated:", newFormData);
+    console.log("Form data received from child:", newFormData);
     setFormData(newFormData);
   };
   console.log("FormData", formData);
@@ -23,16 +23,39 @@ function CreateInterview() {
 
   const onGoToNext = () => {
     console.log("Checking form data:", formData);
+    console.log("Raw duration value:", formData?.duration);
+
+    // More lenient duration check
+    const hasDuration =
+      formData?.duration && formData.duration.trim().length > 0;
+
+    // Debug logging for each field
+    console.log("Validation check results:", {
+      jobPosition: !!formData?.jobPosition,
+      jobDescription: !!formData?.jobDescription,
+      duration: hasDuration,
+      rawDuration: formData?.duration,
+      interviewTypes: formData?.interviewTypes?.length > 0,
+    });
+
     if (
       !formData?.jobPosition ||
       !formData?.jobDescription ||
-      !formData?.duration ||
+      !hasDuration ||
       !formData?.interviewTypes?.length
     ) {
-      toast("Please Enter All Details!");
+      const missingFields = [];
+      if (!formData?.jobPosition) missingFields.push("Job Position");
+      if (!formData?.jobDescription) missingFields.push("Job Description");
+      if (!hasDuration) missingFields.push("Duration");
+      if (!formData?.interviewTypes?.length)
+        missingFields.push("Interview Types");
+
+      console.log("Missing fields:", missingFields);
+      toast(`Please Enter All Details! Missing: ${missingFields.join(", ")}`);
       return;
     }
-    console.log("Moving to next step");
+    console.log("Moving to next step with form data:", formData);
     setStep(step + 1);
   };
 

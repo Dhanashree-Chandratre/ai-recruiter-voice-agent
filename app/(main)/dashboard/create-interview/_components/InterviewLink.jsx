@@ -89,13 +89,35 @@ function InterviewLink({ interview_id, formData }) {
       <div className="mt-7 bg-white p-5 rounded-lg w-full">
         <h2 className="font-bold">Share Via</h2>
         <div className="flex gap-7 mt-2">
-          <Button variant={"outline"} className="cursor-pointer">
+          <Button
+            variant={"outline"}
+            className="cursor-pointer"
+            onClick={() => {
+              window.open(
+                `mailto:?subject=AI Interview Link&body=Here is your interview link: ${GetInterviewUrl()}`
+              );
+            }}
+          >
             <Mail /> Email
           </Button>
-          <Button variant={"outline"} className="cursor-pointer">
+          <Button
+            variant={"outline"}
+            className="cursor-pointer"
+            onClick={() => {
+              window.open(
+                `https://wa.me/?text=Here%20is%20your%20AI%20interview%20link:%20${encodeURIComponent(
+                  GetInterviewUrl()
+                )}`
+              );
+            }}
+          >
             <MessageSquare /> WhatsApp
           </Button>
-          <Button variant={"outline"} className="cursor-pointer">
+          <Button
+            variant={"outline"}
+            className="cursor-pointer"
+            onClick={onCopyLink}
+          >
             <Slack /> Slack
           </Button>
         </div>

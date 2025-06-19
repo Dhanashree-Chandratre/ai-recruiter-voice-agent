@@ -1,26 +1,25 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { supabase } from "../../../services/supabaseClient";
+import { useUser } from "../provider.js";
+import { Button } from "../../../components/ui/button.jsx";
 import { Video } from "lucide-react";
-import { Button } from "../../../../components/ui/button.jsx";
-import { supabase } from "../../../../services/supabaseClient";
-import { useUser } from "../../provider.js";
-import InterviewCard from "./InterviewCard";
+import InterviewCard from "../dashboard/_components/InterviewCard";
 
-function LatestInterviewsList() {
+function AllInterview() {
   const [interviewList, setInterviewList] = useState([]);
   const { user } = useUser();
 
   useEffect(() => {
     user && GetInterviewList();
   }, [user]);
+
   const GetInterviewList = async () => {
     let { data: interviews, error } = await supabase
       .from("interviews")
       .select("*")
       .eq("userEmail", user?.email)
-      .order("id", { ascending: false })
-      .limit(6);
-
+      .order("id", { ascending: false });
     console.log(interviews);
     setInterviewList(interviews);
   };
@@ -28,9 +27,9 @@ function LatestInterviewsList() {
   return (
     <div className="my-5 w-full">
       <h2 className="mt-12 text-xl md:text-2xl font-bold mb-4 md:mb-5">
-        Previously Created Interviews
+        All Previously Created Interviews
       </h2>
-      {interviewList?.length == 0 && (
+      {interviewList?.length === 0 && (
         <div className="p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center gap-3 md:gap-4 bg-white rounded-2xl shadow-sm w-full">
           <Video className="w-10 h-10 md:w-12 md:h-12 text-primary" />
           <h2 className="text-gray-500 text-base md:text-lg">
@@ -52,4 +51,4 @@ function LatestInterviewsList() {
   );
 }
 
-export default LatestInterviewsList;
+export default AllInterview;
