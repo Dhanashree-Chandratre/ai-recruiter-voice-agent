@@ -48,7 +48,7 @@ function DashboardProvider({ children }) {
         >
           <AppSidebar />
           <SidebarTriggerWithPosition />
-          <main className="flex-1 relative py-4 overflow-y-auto">
+          <main className="flex-1 relative py-4 overflow-y-auto ml-[4rem] mr-[4rem] max-w-full">
             {children}
           </main>
         </div>

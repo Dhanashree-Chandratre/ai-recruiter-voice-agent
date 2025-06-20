@@ -25,7 +25,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-12 p-8 bg-white dark:bg-gray-900 rounded-xl shadow-md">
+    <div className="w-full min-h-screen p-4 md:p-8 bg-white dark:bg-gray-900 rounded-none shadow-none flex flex-col">
       <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
         Settings
       </h2>

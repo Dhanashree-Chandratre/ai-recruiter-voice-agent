@@ -65,7 +65,7 @@ function CreateInterview() {
   };
 
   return (
-    <div className="mt-6 w-full flex flex-col gap-6">
+    <div className="w-full min-h-screen p-4 md:p-8 flex flex-col">
       {/* Header with Back Arrow, Title, Progress Bar */}
       <div className="flex flex-col md:flex-row gap-4 md:gap-5 items-center w-full">
         <div className="flex items-center gap-4 md:gap-5">

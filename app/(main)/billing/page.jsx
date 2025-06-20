@@ -47,7 +47,7 @@ const plans = [
 
 export default function BillingPage() {
   return (
-    <div className="max-w-3xl mx-auto mt-12 p-8 bg-white rounded-xl shadow-md">
+    <div className="w-full min-h-screen p-4 md:p-8 bg-white rounded-none shadow-none flex flex-col">
       <h2 className="text-2xl font-bold mb-6">Billing & Subscription</h2>
       <div className="mb-8">
         <h3 className="text-lg font-semibold mb-2">Current Plan</h3>
