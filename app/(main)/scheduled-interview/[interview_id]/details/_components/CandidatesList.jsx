@@ -26,7 +26,27 @@ function CandidatesList({ candidatesList }) {
             </div>
           </div>
           <div className="flex gap-3 items-center">
-            <h2 className="text-green-600">6/10</h2>
+            <h2 className="text-green-600">
+              {(() => {
+                const rating = candidate?.feedback?.feedback?.rating;
+                if (rating) {
+                  const values = [
+                    rating.technicalSkills,
+                    rating.communication,
+                    rating.problemSolving,
+                    rating.experience,
+                  ]
+                    .map(Number)
+                    .filter((v) => !isNaN(v));
+                  if (values.length) {
+                    const avg =
+                      values.reduce((a, b) => a + b, 0) / values.length;
+                    return `${avg.toFixed(1)}/10`;
+                  }
+                }
+                return "N/A";
+              })()}
+            </h2>
             <CandidateFeedbackDialog candidate={candidate} />
           </div>
         </div>

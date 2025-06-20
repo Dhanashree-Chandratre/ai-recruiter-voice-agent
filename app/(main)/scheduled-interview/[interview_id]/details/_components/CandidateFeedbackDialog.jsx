@@ -38,7 +38,27 @@ function CandidateFeedbackDialog({ candidate }) {
                   </div>
                 </div>
                 <div className="flex gap-3 items-center">
-                  <h2 className="text-primary text-2xl font-bold">6/10</h2>
+                  <h2 className="text-primary text-2xl font-bold">
+                    {(() => {
+                      const rating = feedback?.rating;
+                      if (rating) {
+                        const values = [
+                          rating.technicalSkills,
+                          rating.communication,
+                          rating.problemSolving,
+                          rating.experience,
+                        ]
+                          .map(Number)
+                          .filter((v) => !isNaN(v));
+                        if (values.length) {
+                          const avg =
+                            values.reduce((a, b) => a + b, 0) / values.length;
+                          return `${avg.toFixed(1)}/10`;
+                        }
+                      }
+                      return "N/A";
+                    })()}
+                  </h2>
                 </div>
               </div>
               <div className="mt-5">
