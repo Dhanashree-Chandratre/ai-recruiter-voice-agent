@@ -148,13 +148,33 @@ function QuestionList({ formData, onCreateLink }) {
 
       setLoading(false);
     } catch (e) {
-      console.log("Error in GenerateQuestionList:", e);
-      console.log("Error details:", {
+      console.error("Error in GenerateQuestionList:", e);
+      console.error("Error details:", {
         message: e.message,
         response: e.response?.data,
         status: e.response?.status,
+        code: e.code,
+        stack: e.stack,
       });
-      toast.error("Server Error, Try Again!");
+
+      // Provide more specific error messages
+      let errorMessage = "Server Error, Try Again!";
+
+      if (e.response) {
+        // API returned an error response
+        const apiError =
+          e.response.data?.error || e.response.data?.message || e.message;
+        errorMessage = `API Error: ${apiError}`;
+      } else if (e.request) {
+        // Request was made but no response received
+        errorMessage =
+          "Network Error: Unable to reach the server. Please check your connection.";
+      } else if (e.message) {
+        // Something else happened
+        errorMessage = `Error: ${e.message}`;
+      }
+
+      toast.error(errorMessage);
       setLoading(false);
     }
   };

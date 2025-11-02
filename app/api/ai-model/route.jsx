@@ -35,6 +35,18 @@ export async function POST(req) {
 
     console.log("Generated Prompt:", FINAL_PROMPT);
 
+    // Check if API key is configured
+    if (!process.env.OPENROUTER_API_KEY) {
+      console.error("OPENROUTER_API_KEY is not configured");
+      return NextResponse.json(
+        {
+          error:
+            "OpenRouter API key is not configured. Please check environment variables.",
+        },
+        { status: 500 }
+      );
+    }
+
     const openai = new OpenAI({
       baseURL: "https://openrouter.ai/api/v1",
       apiKey: process.env.OPENROUTER_API_KEY,
