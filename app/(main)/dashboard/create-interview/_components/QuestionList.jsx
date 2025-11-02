@@ -38,37 +38,112 @@ function QuestionList({ formData, onCreateLink }) {
   }, [formData]);
 
   const cleanJsonString = (str) => {
-    // Find the JSON array in the response
-    const jsonMatch = str.match(/\[\s*\{[\s\S]*\}\s*\]/);
-    if (jsonMatch) {
-      return jsonMatch[0];
+    if (!str || typeof str !== "string") {
+      console.error("Invalid input to cleanJsonString:", str);
+      return "[]";
     }
-    return str;
+
+    // Remove markdown code blocks if present (```json ... ``` or ``` ... ```)
+    let cleaned = str
+      .replace(/```json\s*/gi, "")
+      .replace(/```\s*/g, "")
+      .trim();
+
+    // Try to find JSON array in various formats
+    // Pattern 1: Direct JSON array
+    let jsonMatch = cleaned.match(/\[\s*\{[\s\S]*\}\s*\]/);
+
+    if (!jsonMatch) {
+      // Pattern 2: JSON array with potential extra whitespace/newlines
+      jsonMatch = cleaned.match(/\[[\s\S]*?\]/);
+    }
+
+    if (!jsonMatch) {
+      // Pattern 3: Look for array starting after common prefixes
+      const arrayStart = cleaned.indexOf("[");
+      const arrayEnd = cleaned.lastIndexOf("]");
+      if (arrayStart !== -1 && arrayEnd !== -1 && arrayEnd > arrayStart) {
+        jsonMatch = [cleaned.substring(arrayStart, arrayEnd + 1)];
+      }
+    }
+
+    if (jsonMatch && jsonMatch[0]) {
+      return jsonMatch[0].trim();
+    }
+
+    console.warn("Could not extract JSON array from response:", str);
+    return str.trim();
   };
 
   const GenerateQuestionList = async () => {
     setLoading(true);
     try {
       console.log("Sending request with formData:", formData);
-      const result = await axios.post("/api/ai-model", {
-        ...formData,
-      });
+
+      // Convert interviewTypes array to comma-separated string for the API
+      const requestData = {
+        jobPosition: formData.jobPosition,
+        jobDescription: formData.jobDescription,
+        duration: formData.duration,
+        type: Array.isArray(formData.interviewTypes)
+          ? formData.interviewTypes.join(", ")
+          : formData.interviewTypes || "Technical",
+      };
+
+      console.log("Request data being sent:", requestData);
+
+      const result = await axios.post("/api/ai-model", requestData);
       console.log("Raw API Response:", result);
 
+      // Check if API returned an error
+      if (result.data.error) {
+        throw new Error(result.data.error);
+      }
+
       const Content = result.data.questions;
+
+      if (!Content) {
+        throw new Error("No questions received from API");
+      }
+
       console.log("Content before parsing:", Content);
 
       try {
         // Extract and parse the JSON array
         const cleanedContent = cleanJsonString(Content);
         console.log("Cleaned content:", cleanedContent);
+        console.log("Cleaned content length:", cleanedContent.length);
 
         const parsedContent = JSON.parse(cleanedContent);
-        console.log("Successfully parsed questions array:", parsedContent);
-        setQuestionList(parsedContent);
+
+        // Validate parsed content is an array
+        if (!Array.isArray(parsedContent)) {
+          throw new Error("Parsed content is not an array");
+        }
+
+        // Validate array has valid question objects
+        const validQuestions = parsedContent.filter(
+          (q) => q && typeof q === "object" && q.question && q.type
+        );
+
+        if (validQuestions.length === 0) {
+          throw new Error("No valid questions found in parsed array");
+        }
+
+        console.log("Successfully parsed questions array:", validQuestions);
+        setQuestionList(validQuestions);
       } catch (parseError) {
         console.error("Failed to parse questions:", parseError);
-        toast.error("Failed to parse questions. Please try again.");
+        console.error("Parse error details:", {
+          message: parseError.message,
+          stack: parseError.stack,
+          rawContent: Content,
+          contentLength: Content?.length,
+          contentPreview: Content?.substring(0, 500),
+        });
+        toast.error(
+          `Failed to parse questions: ${parseError.message}. Please check the console for details.`
+        );
       }
 
       setLoading(false);
